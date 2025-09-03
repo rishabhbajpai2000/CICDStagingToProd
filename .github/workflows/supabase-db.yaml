@@ -37,8 +37,8 @@ jobs:
             echo "No migration changes to commit"
           else
             git commit -m "chore: auto migration from staging [skip ci]"
-            git pull --rebase origin main
-            git push origin main
+            git pull --rebase origin master
+            git push origin master
           fi
 
       # Step 3: Apply committed migrations to production DB
