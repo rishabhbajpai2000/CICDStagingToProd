@@ -24,7 +24,7 @@ jobs:
       - name: Diff staging DB and generate migration
         run: |
           supabase db diff \
-            --db-url "postgresql://postgres.eldosqpqvmfscojvuomk:proj@157@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres" \
+            --db-url ${{ secrets.STGIBG_DB_URL }} \
             -f auto_migration_$(date +%s)
 
       # Step 2: Commit the migration back to repo
@@ -45,4 +45,4 @@ jobs:
       - name: Push migrations to prod DB
         run: |
           supabase db push \
-            --db-url "postgresql://postgres.viiploacougeemkfvdup:proj@157@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres"
+            --db-url ${{ secrets.PROD_DB_URL }}
