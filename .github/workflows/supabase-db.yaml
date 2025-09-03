@@ -24,7 +24,7 @@ jobs:
       - name: Diff staging DB and generate migration
         run: |
           supabase db diff \
-            --db-url ${{ secrets.STGIBG_DB_URL }} \
+            --db-url ${{ secrets.STAGING_DB_URL }} \
             -f auto_migration_$(date +%s)
 
       # Step 2: Commit the migration back to repo
