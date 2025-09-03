@@ -1,0 +1,15 @@
+name: Prod Pipe line
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  supabase-sync:
+    uses: ./.github/workflows/supabase-db.yaml
+    secrets: inherit

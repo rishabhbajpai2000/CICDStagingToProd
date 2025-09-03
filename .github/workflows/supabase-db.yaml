@@ -1,0 +1,48 @@
+name: Supabase DB Sync
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write 
+  
+jobs:
+  db-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      # Step 1: Generate migration file from staging DB
+      - name: Diff staging DB and generate migration
+        run: |
+          supabase db diff \
+            --db-url "postgresql://postgres.eldosqpqvmfscojvuomk:proj@157@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres" \
+            -f auto_migration_$(date +%s)
+
+      # Step 2: Commit the migration back to repo
+      - name: Commit migration file
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add supabase/migrations
+          if git diff --cached --quiet; then
+            echo "No migration changes to commit"
+          else
+            git commit -m "chore: auto migration from staging [skip ci]"
+            git pull --rebase origin main
+            git push origin main
+          fi
+
+      # Step 3: Apply committed migrations to production DB
+      - name: Push migrations to prod DB
+        run: |
+          supabase db push \
+            --db-url "postgresql://postgres.viiploacougeemkfvdup:proj@157@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres"
